@@ -39,3 +39,17 @@ app.use(
     }
   })
 );
+
+
+// backend/app.js
+const routes = require('./routes');
+
+// ...
+
+app.use(routes); // Connect all the routes
+
+
+// backend/app.js
+// ...
+
+module.exports = app;
