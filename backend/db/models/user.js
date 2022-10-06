@@ -6,7 +6,7 @@ const {
 const bcrypt = require('bcryptjs')
 
 module.exports = (sequelize, DataTypes) => {
-  class Users extends Model {
+  class User extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     getCurrentUserById(id) {
-      return Users.scope("currentUser").findByPk(id)
+      return User.scope("currentUser").findByPk(id)
     }
 
     /**
@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static async login({ credential, password }) {
       const { Op } = require('Sequelize')
-      const user = await Users.scope("loginUser").findOne({
+      const user = await User.scope("loginUser").findOne({
         where: {
           [Op.or]: {
             username: credential,
@@ -57,21 +57,21 @@ module.exports = (sequelize, DataTypes) => {
         }
       });
       if (user && user.validatePassword(password)) {
-        return await Users.scope("currentUser").findByPk(user.id);
+        return await User.scope("currentUser").findByPk(user.id);
       }
     }
 
     static async signup({ username, email, password }) {
       const hashedPassword = bcrypt.hashSync(password);
-      const user = await Users.create({
+      const user = await User.create({
         username,
         email,
         hashedPassword
       })
-      return await Users.scope('currentUser').findByPk(user.id)
+      return await User.scope('currentUser').findByPk(user.id)
     }
   }
-  Users.init({
+  User.init({
     username: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -108,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: DataTypes.DATE
   }, {
     sequelize,
-    modelName: 'Users',
+    modelName: 'User',
     defaultScope: {
       attributes: {
         exclude: ["hashedPassword", "email", "createdAt", "updatedAt"]
@@ -125,5 +125,5 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   });
-  return Users;
+  return User;
 };
