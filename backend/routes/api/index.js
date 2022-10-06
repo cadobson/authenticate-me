@@ -1,5 +1,8 @@
 // backend/routes/api/index.js
 const router = require('express').Router();
+const sessionRouter = require('./session.js');
+const usersRouter = require('./users.js');
+const { restoreUser } = require("../../utils/auth.js");
 
 // The following block of code is kept in for pedagogical purposes
 // In a real application, it would be removed before publication
@@ -45,7 +48,18 @@ const router = require('express').Router();
 // Connect restoreUser middleware to the API router
 // If current user session is valid, set req.user to the user in the database
 // If current user session is not valid, set req.user to null
-const { restoreUser } = require("../../utils/auth.js");
+
+
+
 router.use(restoreUser);
+
+router.use('/session', sessionRouter);
+
+router.use('/users', usersRouter);
+
+router.post('/test', (req, res) => {
+  res.json({ requestBody: req.body });
+});
+
 
 module.exports = router;
